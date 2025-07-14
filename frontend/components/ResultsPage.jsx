@@ -36,8 +36,9 @@ const ResultsPage = () => {
 
     const checkTaskStatus = async () => {
       try {
+        const apiUrl = import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}` : '';
         // 먼저 분석 작업인지 확인
-        let response = await fetch(`/api/v1/books/analyze/${taskId}/status`)
+        let response = await fetch(`${apiUrl}/api/v1/books/analyze/${taskId}/status`)
         
         if (response.ok) {
           setTaskType('analysis')
@@ -48,7 +49,7 @@ const ResultsPage = () => {
         }
 
         // 분석 작업이 아니면 문서 생성 작업인지 확인
-        response = await fetch(`/api/v1/documents/${taskId}/status`)
+        response = await fetch(`${apiUrl}/api/v1/documents/${taskId}/status`)
         
         if (response.ok) {
           setTaskType('generation')
@@ -84,14 +85,15 @@ const ResultsPage = () => {
 
   const handleDownload = async (type) => {
     try {
+      const apiUrl = import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}` : '';
       let url
       let filename
       
       if (type === 'csv' && taskType === 'analysis') {
-        url = `/api/v1/books/analyze/${taskId}/csv`
+        url = `${apiUrl}/api/v1/books/analyze/${taskId}/csv`
         filename = `analysis_${taskId}.csv`
       } else if (type === 'docx' && taskType === 'generation') {
-        url = `/api/v1/documents/${taskId}/download`
+        url = `${apiUrl}/api/v1/documents/${taskId}/download`
         filename = `textbook_${taskId}.docx`
       } else {
         throw new Error('잘못된 다운로드 요청입니다.')

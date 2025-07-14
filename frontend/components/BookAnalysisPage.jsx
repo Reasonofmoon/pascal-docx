@@ -58,8 +58,9 @@ const BookAnalysisPage = () => {
     setIsLoading(true)
 
     try {
+      const apiUrl = import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}` : '';
       // API 호출
-      const response = await fetch('/api/v1/books/analyze', {
+      const response = await fetch(`${apiUrl}/api/v1/books/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

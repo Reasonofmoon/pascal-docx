@@ -104,7 +104,8 @@ const DocumentGenerationPage = () => {
       formData.append('csv_file', csvFile)
       formData.append('settings', JSON.stringify(settings))
 
-      const response = await fetch('/api/v1/documents/generate', {
+      const apiUrl = import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}` : '';
+      const response = await fetch(`${apiUrl}/api/v1/documents/generate`, {
         method: 'POST',
         body: formData
       })
