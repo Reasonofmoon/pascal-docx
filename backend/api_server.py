@@ -3,10 +3,13 @@
 원서 분석, 토론 주제 생성, DOCX 교재 생성을 위한 통합 API 서버
 """
 
+from dotenv import load_dotenv
 import os
 import asyncio
 import uuid
 from datetime import datetime
+
+load_dotenv()
 from typing import Dict, List, Optional, Any
 from fastapi import FastAPI, HTTPException, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +18,7 @@ from pydantic import BaseModel, Field
 import pandas as pd
 import json
 from pathlib import Path
+import requests
 
 # 로컬 모듈 import
 from book_analyzer import BookAnalyzer, BookInfo, EducationLevel, EducationArea
@@ -443,6 +447,23 @@ async def get_sample_analysis():
             "best_areas": ["Literature & Identity", "Human & Society", "Future & Careers"]
         }
     }
+
+@app.get("/api/v1/models")
+async def get_models():
+    """OpenAI 모델 목록 조회"""
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
+    }
+    
+    try:
+        response = requests.get("https://api.openai.com/v1/models", headers=headers)
+        response.raise_for_status()  # HTTP 오류 발생 시 예외 발생
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch models from OpenAI: {e}")
 
 if __name__ == "__main__":
     import uvicorn
